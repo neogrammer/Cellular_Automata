@@ -14,6 +14,10 @@
 
 #include "Game.hpp"
 
+float zoom{ 1.f };
+bool zooming = false;
+sf::Vector2i zoomFocusPt{};
+
 int Application::run()
 {
 
@@ -46,11 +50,35 @@ int Application::run()
                 if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
                     wnd.close();
             }
+            else if (const auto* wheelScrolled = event->getIf<sf::Event::MouseWheelScrolled>())
+            {
+                if (wheelScrolled->delta > 0)
+                {
+                    zooming = true;
+                    zoom -= 0.2f;
+                    zoomFocusPt = wheelScrolled->position;
+                    game.zoomFactor = zoom;
+                }
+                else if (wheelScrolled->delta < 0)
+                {
+                    zooming = true;
+                    zoom += 0.2f;
+                    zoomFocusPt = wheelScrolled->position;
+                    game.zoomFactor = zoom;
+
+                }
+            }
         }
         if (!wnd.isOpen()) 
             break;
 
         gameTime = timer.restart().asSeconds();
+
+        if (zooming)
+        {
+            zooming = false;
+            game.zoomView(wnd,zoomFocusPt, zoom, gameTime);
+        }
 
         code = game.update(wnd, gameTime);
         if (code != 69)
@@ -65,7 +93,7 @@ int Application::run()
             return 69;
         }
 
-        wnd.clear(sf::Color(47, 147, 247, 255));
+        wnd.clear(sf::Color(0,0,0, 255));
 
         code = game.render(wnd, gameTime);
         if (code != 69)

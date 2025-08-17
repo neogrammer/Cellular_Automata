@@ -8,11 +8,19 @@ class Game
 
 	Grid grid{ {160.f,90.f}, {160, 90}, {8,8} };
 	float countdown{};
+	bool leftButtonDown{ false };
+	bool leftMouseClicked{ false };
+	sf::Vector2i anchorPoint{};
+	sf::Vector2i bufferPoint{};
+public:
+	float zoomFactor{};
 public:
 	int init();
 	int update(sf::RenderWindow& wnd_, float dt_);
 	int render(sf::RenderWindow& wnd_, float dt_);
 	void destroy();
+
+	void zoomView(sf::RenderWindow& wnd_, sf::Vector2i zoomFocusPt, float zoom, float gameTime);
 };
 
 #endif
